@@ -6,15 +6,15 @@ const app = express();
 
 // Rotues
 // Https Method -> GET, POST, PUT, PATCH, DELETE
-app.get("/", (req, res, next) => {
+app.get("/", (req: Request, res, next) => {
   res.json({ message: "Server is Running.." });
 });
 
 // Global Error Handler
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
-  const statusCode = err.statusCode || 500;
+  const statusCode = err.status || 500;
 
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     message: err.message,
     errorStack: config.node_env === "Local" ? err.stack : "",
   });
