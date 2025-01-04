@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
+import userModel from "./userModel";
 
-const createUser = (req: Request, res: Response, next: NextFunction) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
   // Validation
 
   const { name, email, password } = req.body;
@@ -12,6 +13,12 @@ const createUser = (req: Request, res: Response, next: NextFunction) => {
   }
 
   // Process || Logic
+  const user = await userModel.findOne({ email: email });
+
+  if (user) {
+    const error = createHttpError(400, "User Already Exits with this email..");
+    return next(error);
+  }
 
   // Response
 
