@@ -30,7 +30,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   });
   // Response
 
-  res.json({ id: newUser._id });
+  res.json({ id: newUser });
 };
 
 export { createUser };
