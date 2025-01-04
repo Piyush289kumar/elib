@@ -21,10 +21,16 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     return next(error);
   }
 
-  const hashedPassword = bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = userModel.create({
+    name: name,
+    email: email,
+    password: hashedPassword,
+  });
   // Response
 
-  res.json({ message: "User Created..." });
+  res.json({ id: newUser._id });
 };
 
 export { createUser };
