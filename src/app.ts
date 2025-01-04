@@ -3,6 +3,7 @@ import globalErrorHandler from "./middlewares/globalErrorHandler";
 import userRouter from "./users/userRoutes";
 
 const app = express();
+app.use(express.json());
 
 // Rotues
 
