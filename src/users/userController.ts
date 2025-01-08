@@ -57,7 +57,51 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   });
   // Response
 
-  res.json({ token });
+  res.status(201).json({ token });
 };
 
-export { createUser };
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  // Validation
+
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    const error = createHttpError(400, "All Fields are required...");
+    return next(error);
+  }
+
+  // Process || Logic
+  let user;
+  try {
+    user = await userModel.findOne({ email: email });
+
+    if (!user) {
+      const error = createHttpError(404, "User Not Found..");
+      return next(error);
+    }
+  } catch (err) {
+    return next(
+      createHttpError(
+        500,
+        "Error at Finding User With Email : File => userController.ts"
+      )
+    );
+  }
+  const isPasswordMatch = await bcrypt.compare(
+    password,
+    user.password as string
+  );
+
+  if (!isPasswordMatch) {
+    return next(createHttpError(401, "Password is Incorrect"));
+  }
+
+  const asscessToken = sign({ sub: user._id }, config.jwt_secret as string, {
+    expiresIn: "7d",
+  });
+  // Response
+
+  res.status(200).json({ asscessToken });
+};
+
+export { createUser, loginUser };
