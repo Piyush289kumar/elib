@@ -16,20 +16,41 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   // Process || Logic
-  const user = await userModel.findOne({ email: email });
+  try {
+    const user = await userModel.findOne({ email: email });
 
-  if (user) {
-    const error = createHttpError(400, "User Already Exits with this email..");
-    return next(error);
+    if (user) {
+      const error = createHttpError(
+        400,
+        "User Already Exits with this email.."
+      );
+      return next(error);
+    }
+  } catch (err) {
+    return next(
+      createHttpError(
+        500,
+        "Error at Finding User With Email : File => userController.ts"
+      )
+    );
   }
-
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = await userModel.create({
-    name: name,
-    email: email,
-    password: hashedPassword,
-  });
+  let newUser;
+  try {
+    newUser = await userModel.create({
+      name: name,
+      email: email,
+      password: hashedPassword,
+    });
+  } catch (err) {
+    return next(
+      createHttpError(
+        500,
+        "Error at Creating New User : File => userController.ts"
+      )
+    );
+  }
 
   const token = sign({ sub: newUser._id }, config.jwt_secret as string, {
     expiresIn: "7d",
