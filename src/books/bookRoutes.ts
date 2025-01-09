@@ -7,7 +7,7 @@ const bookRouter = Router();
 
 const multerBookMiddlewareFileUpload = multer({
   dest: path.resolve(__dirname, "../../public/storage/books-uploads"),
-  limits: { fileSize: 3e7 },
+  limits: { fileSize: 1e7 },
 });
 // Routes
 bookRouter.post(
