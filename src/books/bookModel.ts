@@ -2,12 +2,12 @@ import mongoose from "mongoose";
 
 const BookSchema = new mongoose.Schema(
   {
-    name: {
+    title: {
       type: String,
-      required: [true, "Book name is required"],
+      required: [true, "Book title is required"],
       trim: true, // Removes unnecessary spaces
-      minlength: [2, "Book name must be at least 2 characters long"],
-      maxlength: [255, "Book name cannot exceed 255 characters"],
+      minlength: [2, "Book title must be at least 2 characters long"],
+      maxlength: [255, "Book title cannot exceed 255 characters"],
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,

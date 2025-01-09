@@ -6,6 +6,8 @@ import { sign } from "jsonwebtoken";
 import { config } from "../config/config";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
+  console.log("Files : ", req.files);
+
   res.status(201).json({ message: "OK" });
 };
 
