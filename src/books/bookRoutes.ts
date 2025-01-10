@@ -1,6 +1,11 @@
 import path from "node:path";
 import { Router } from "express";
-import { createBook, getAllBooks, updateBook } from "./bookController";
+import {
+  createBook,
+  getAllBooks,
+  getBookById,
+  updateBook,
+} from "./bookController";
 import multer from "multer";
 import authentication from "../middlewares/authentication";
 
@@ -38,4 +43,6 @@ bookRouter.patch(
 );
 
 bookRouter.get("/", getAllBooks);
+bookRouter.get("/:bookId", getBookById);
+
 export default bookRouter;
