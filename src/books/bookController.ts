@@ -145,4 +145,23 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createBook, updateBook };
+const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1; // Default page is 1
+    const limit = parseInt(req.query.limit as string) || 5; // Default limit is 5
+    const skip = (page - 1) * limit;
+
+    const books = await bookModel.find().skip(skip).limit(limit);
+    const totalBooks = await bookModel.countDocuments();
+
+    res.status(200).json({
+      books,
+      totalBooks,
+      totalPages: Math.ceil(totalBooks / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    return next(createHttpError(500, "Error While Fetching All Books."));
+  }
+};
+export { createBook, updateBook, getAllBooks };
