@@ -171,6 +171,10 @@ const getBookById = async (req: Request, res: Response, next: NextFunction) => {
 
     const book = await bookModel.findOne({ _id: bookId });
 
+    if (!book) {
+      return next(createHttpError(404, "Book not Found."));
+    }
+
     res.status(200).json({
       book,
     });
