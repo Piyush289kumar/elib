@@ -4,6 +4,7 @@ import cloudinary from "../config/cloudinary";
 import path from "node:path";
 import bookModel from "./bookModel";
 import * as fs from "node:fs";
+import { AuthRequest } from "../middlewares/authentication";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
   const { title, genre } = req.body;
@@ -44,9 +45,11 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
         format: bookPdfFileMimeType,
       }
     );
+
+    const _req = req as AuthRequest;
     const newBook = await bookModel.create({
       title: title,
-      author: "677973dc50c0af1e0bbb148b",
+      author: _req.loginUserID,
       genre: genre,
       coverImage: coverImageUploadResult?.secure_url,
       pdfFile: bookPdfFileUploadResult.secure_url,
