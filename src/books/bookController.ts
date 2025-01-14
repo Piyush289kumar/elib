@@ -151,7 +151,11 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
     const limit = parseInt(req.query.limit as string) || 5; // Default limit is 5
     const skip = (page - 1) * limit;
 
-    const books = await bookModel.find().skip(skip).limit(limit);
+    const books = await bookModel
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .populate("author", "name email");
     const totalBooks = await bookModel.countDocuments();
 
     res.status(200).json({
@@ -183,4 +187,52 @@ const getBookById = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createBook, updateBook, getAllBooks, getBookById };
+const deleteBookById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const bookId = req.params.bookId;
+
+    const book = await bookModel.findOne({ _id: bookId });
+
+    if (!book) {
+      return next(createHttpError(404, "Book not Found."));
+    }
+
+    // Check Access
+    const _req = req as AuthRequest;
+    if (book.author.toString() !== _req.loginUserID) {
+      return next(createHttpError(403, "You Can't Delete Others Book."));
+    }
+
+    try {
+      // Delete Cover Image Files From Cloudinary
+      const coverImageSlip = book.coverImage.split("/");
+      const coverImageCloudinaryPublicId =
+        coverImageSlip.at(-2) + "/" + coverImageSlip.at(-1)?.split(".").at(-2);
+      await cloudinary.uploader.destroy(coverImageCloudinaryPublicId);
+
+      // Delete PDF Files From Cloudinary
+      const pdfFileSlip = book.pdfFile.split("/");
+      const pdfFileCloudinaryPublicId =
+        pdfFileSlip.at(-2) + "/" + pdfFileSlip.at(-1);
+      await cloudinary.uploader.destroy(pdfFileCloudinaryPublicId);
+    } catch (err) {
+      return next(
+        createHttpError(500, "Error While Delete Files From Cloudinary.")
+      );
+    }
+
+    const deleteBook = await bookModel.findByIdAndDelete({ _id: bookId });
+
+    res.status(204).json({
+      deleteBook,
+    });
+  } catch (error) {
+    return next(createHttpError(500, "Error While Fetching Book By Id."));
+  }
+};
+
+export { createBook, updateBook, getAllBooks, getBookById, deleteBookById };
