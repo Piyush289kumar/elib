@@ -2,9 +2,16 @@ import express from "express";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 import userRouter from "./users/userRoutes";
 import bookRouter from "./books/bookRoutes";
+import cors from "cors";
+import { config } from "./config/config";
 
 const app = express();
 app.use(express.json());
+app.use(
+  cors({
+    origin: config.frontend_domain,
+  })
+);
 
 // Rotues
 

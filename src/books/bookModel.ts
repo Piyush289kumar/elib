@@ -13,6 +13,7 @@ const BookSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: [true, "Author name is required"],
       trim: true,
+      ref: "User",
     },
     genre: {
       type: String,
