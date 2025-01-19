@@ -52,12 +52,12 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     );
   }
 
-  const token = sign({ sub: newUser._id }, config.jwt_secret as string, {
+  const accessToken = sign({ sub: newUser._id }, config.jwt_secret as string, {
     expiresIn: "7d",
   });
   // Response
 
-  res.status(201).json({ token });
+  res.status(201).json({ accessToken });
 };
 
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -96,12 +96,12 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     return next(createHttpError(401, "Password is Incorrect"));
   }
 
-  const asscessToken = sign({ sub: user._id }, config.jwt_secret as string, {
+  const accessToken = sign({ sub: user._id }, config.jwt_secret as string, {
     expiresIn: "7d",
   });
   // Response
 
-  res.status(200).json({ asscessToken });
+  res.status(200).json({ accessToken });
 };
 
 export { createUser, loginUser };
